@@ -1,0 +1,49 @@
+.market-container {
+  padding: 20px;
+}
+
+.market-list {
+  display: grid;
+  gap: 15px;
+}
+
+.market-card {
+  background: rgba(30, 41, 59, 0.9);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  transition: 0.3s;
+}
+.market-card:hover {
+  transform: translateY(-4px);
+}
+
+.market-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.market-actions select {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  background: #1e293b;
+  color: white;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.swap-btn {
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.swap-btn:hover {
+  opacity: 0.8;
+}

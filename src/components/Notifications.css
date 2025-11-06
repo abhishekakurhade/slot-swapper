@@ -1,0 +1,25 @@
+/* src/Notifications.css */
+.notifications-wrapper {
+  position: fixed;
+  top: 88px;
+  right: 24px;
+  z-index: 9999;
+}
+
+.toasts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background: linear-gradient(90deg, rgba(59,130,246,0.12), rgba(99,102,241,0.1));
+  color: #e6f0ff;
+  border: 1px solid rgba(99,102,241,0.18);
+  box-shadow: 0 8px 20px rgba(3,7,18,0.6);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  min-width: 240px;
+  backdrop-filter: blur(6px);
+}

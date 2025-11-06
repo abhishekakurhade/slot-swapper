@@ -113,7 +113,3 @@ slot-swapper/
 ## 💖 Acknowledgments
 Thanks to **FastAPI**, **React**, and **Tailwind-inspired CSS** for powering this project.
 
----
-
-## 🧾 License
-This project is open-source under the **MIT License**.

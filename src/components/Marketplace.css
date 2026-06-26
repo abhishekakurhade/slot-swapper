@@ -1,49 +1,104 @@
+/* Main Container */
 .market-container {
-  padding: 20px;
+  padding: 30px;
+  color: #f8fafc;
+  font-family: "Inter", sans-serif;
 }
 
+/* Section Title */
+.section-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #93c5fd;
+  letter-spacing: 0.5px;
+}
+
+/* No slots message */
+.no-slots {
+  color: #cbd5e1;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+/* Cards list layout */
 .market-list {
-  display: grid;
-  gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
+/* Card Container */
 .market-card {
-  background: rgba(30, 41, 59, 0.9);
-  border-radius: 15px;
+  background: rgba(30, 41, 59, 0.85); /* slate-800 */
   padding: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-  transition: 0.3s;
-}
-.market-card:hover {
-  transform: translateY(-4px);
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 6px solid #3b82f6; /* Blue highlight */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  transition: 0.25s ease-in-out;
 }
 
+/* Hover effect */
+.market-card:hover {
+  transform: scale(1.02);
+  border-left-color: #2563eb;
+}
+
+/* Event details area */
+.market-details h3 {
+  font-size: 20px;
+  color: #bfdbfe;
+  margin-bottom: 5px;
+}
+
+.market-details p {
+  margin: 4px 0;
+  font-size: 15px;
+  color: #e2e8f0;
+}
+
+/* Actions Section */
 .market-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 12px;
 }
 
+/* Dropdown (select event) */
 .market-actions select {
-  flex: 1;
-  padding: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
-  background: #1e293b;
-  color: white;
-  border: none;
-  font-size: 0.95rem;
+  color: #f1f5f9;
+  outline: none;
+  width: 180px;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.swap-btn {
-  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
-  border: none;
-  padding: 8px 12px;
-  border-radius: 10px;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
+.market-actions select:hover {
+  background: rgba(255, 255, 255, 0.18);
 }
+
+/* Request Button */
+.swap-btn {
+  background: #8b5cf6; /* Purple */
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s ease-in-out;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
 .swap-btn:hover {
-  opacity: 0.8;
+  background: #7c3aed;
+  transform: scale(1.05);
 }

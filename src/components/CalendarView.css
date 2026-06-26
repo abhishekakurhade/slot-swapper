@@ -1,105 +1,211 @@
+/* Calendar.css */
+
 .calendar-container {
   padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #9c9ea2;
 }
 
-.section-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: #fff;
+.calendar-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 16px;
 }
 
-.event-form {
-  display: flex;
-  gap: 10px;
-  background: rgba(30, 41, 59, 0.9);
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
-}
-
-.event-form input {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #1e293b;
-  color: white;
-  font-size: 0.95rem;
-  outline: none;
-}
-
-.add-btn {
-  background: linear-gradient(90deg, #2563eb, #1d4ed8);
-  border: none;
-  padding: 10px 15px;
-  color: white;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.add-btn:hover {
-  background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-}
-
-.event-list {
+.calendar-grid {
   display: grid;
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
 }
 
-.event-card {
-  background: rgba(30, 41, 59, 0.9);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 15px;
-  padding: 15px;
+.calendar-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.calendar-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  transition: 0.3s;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-}
-.event-card:hover {
-  transform: translateY(-3px);
+  align-items: start;
+  gap: 10px;
 }
 
-.event-title {
+.calendar-card-title {
+  margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-.event-info {
-  font-size: 0.9rem;
-  color: #a5b4fc;
+.calendar-actions {
+  display: flex;
+  gap: 6px;
 }
 
-.event-status {
-  margin-top: 5px;
+.btn {
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.btn-delete {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-save {
+  background: #059669;
+  color: #fff;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.calendar-time {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 6px;
   font-weight: 500;
 }
-.event-status.busy {
-  color: #f87171;
+
+.status-busy {
+  background: #fee2e2;
+  color: #b91c1c;
 }
-.event-status.swappable {
-  color: #34d399;
+.status-swappable {
+  background: #dcfce7;
+  color: #15803d;
+}
+.status-swap_pending {
+  background: #fef9c3;
+  color: #854d0e;
 }
 
-.swap-btn {
-  padding: 8px 12px;
+/* Modal */
+.calendar-edit-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.calendar-edit-form {
+  width: 400px;
+  background: #fff;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.3);
+}
+
+.calendar-edit-form h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.calendar-edit-form label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.calendar-edit-form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.edit-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.calendar-empty {
+  text-align: center;
+  color: #6b7280;
+}
+
+.calendar-loading,
+.calendar-error {
+  text-align: center;
+  color: #374151;
+}
+/* ADD EVENT FORM */
+.add-event-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.add-event-form input {
+  flex: 1 1 200px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.btn-add {
+  background: #0ea5a0;
+  color: white;
+  padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: 500;
+  transition: 0.2s;
 }
-.swap-btn.swappable {
-  background: #34d399;
-  color: black;
+
+.btn-add:hover {
+  background: #0d9488;
 }
-.swap-btn.busy {
-  background: #f87171;
-  color: white;
+.status-select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  font-size: 0.95rem;
 }
-.swap-btn:hover {
-  opacity: 0.9;
+
+.status-select:focus {
+  outline: none;
+  border-color: #0ea5a0;
+  box-shadow: 0 0 0 2px rgba(14, 165, 160, 0.2);
 }

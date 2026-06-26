@@ -1,85 +1,314 @@
 import React, { useEffect, useState } from "react";
-import { listMyEvents } from "../api";
+import {
+  listMyEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  toggleSwappable,
+} from "../api";
 import "./CalendarView.css";
 
-export default function CalendarView({ token, createEvent, toggleSwappable }) {
+export default function Calendar() {
   const [events, setEvents] = useState([]);
-  const [title, setTitle] = useState("");
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    start_time: "",
+    end_time: "",
+    status: "BUSY",
+  });
 
-  const loadEvents = async () => {
-    const data = await listMyEvents(token);
-    setEvents(data);
-  };
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    start_time: "",
+    end_time: "",
+    status: "BUSY",
+  });
 
-  const handleAdd = async (e) => {
-    e.preventDefault();
-    await createEvent({ title, start_time: start, end_time: end }, token);
-    setTitle("");
-    setStart("");
-    setEnd("");
-    loadEvents();
-  };
+  const token = localStorage.getItem("token");
 
-  const handleToggle = async (id, status) => {
-    const newStatus = status === "SWAPPABLE" ? "BUSY" : "SWAPPABLE";
-    await toggleSwappable(id, newStatus, token);
-    loadEvents();
-  };
+  // Fetch events
+  async function fetchEvents() {
+    try {
+      setLoading(true);
+      const res = await listMyEvents(token);
+      setEvents(res || []);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load your events.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    loadEvents();
+    fetchEvents();
   }, []);
+
+  // Add new event
+  async function handleAddEvent(e) {
+    e.preventDefault();
+    if (!newEvent.title || !newEvent.start_time || !newEvent.end_time) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    try {
+      const created = await createEvent(
+        {
+          title: newEvent.title,
+          start_time: newEvent.start_time,
+          end_time: newEvent.end_time,
+        },
+        token
+      );
+
+      // Update event status if not BUSY (backend default)
+      if (newEvent.status !== "BUSY") {
+        await toggleSwappable(created.id, newEvent.status, token);
+        created.status = newEvent.status;
+      }
+
+      setEvents((prev) => [...prev, created]);
+      setNewEvent({ title: "", start_time: "", end_time: "", status: "BUSY" });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add event.");
+    }
+  }
+
+  // Delete event
+  async function handleDelete(id) {
+    if (!window.confirm("Delete this event?")) return;
+    try {
+      await deleteEvent(id, token);
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Delete failed.");
+    }
+  }
+
+  // Start editing
+  function startEdit(event) {
+    setEditingId(event.id);
+    setEditForm({
+      title: event.title,
+      start_time: event.start_time.slice(0, 16),
+      end_time: event.end_time.slice(0, 16),
+      status: event.status,
+    });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditForm({
+      title: "",
+      start_time: "",
+      end_time: "",
+      status: "BUSY",
+    });
+  }
+
+  // Submit edited event
+  async function submitEdit(e) {
+    e.preventDefault();
+    try {
+      const updated = await updateEvent(
+        editingId,
+        {
+          title: editForm.title,
+          start_time: editForm.start_time,
+          end_time: editForm.end_time,
+        },
+        token
+      );
+
+      // Update status if needed
+      if (editForm.status !== updated.status) {
+        await toggleSwappable(editingId, editForm.status, token);
+        updated.status = editForm.status;
+      }
+
+      setEvents((prev) =>
+        prev.map((e) => (e.id === editingId ? updated : e))
+      );
+      cancelEdit();
+    } catch (err) {
+      console.error(err);
+      alert("Update failed.");
+    }
+  }
+
+  function onEditChange(e) {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function onNewChange(e) {
+    const { name, value } = e.target;
+    setNewEvent((prev) => ({ ...prev, [name]: value }));
+  }
+
+  if (loading) return <div className="calendar-loading">Loading events...</div>;
+  if (error) return <div className="calendar-error">{error}</div>;
 
   return (
     <div className="calendar-container">
-      <h2 className="section-title">My Events</h2>
+      <h2 className="calendar-title">My Calendar Events</h2>
 
-      <form onSubmit={handleAdd} className="event-form">
+      {/* ➕ ADD EVENT FORM */}
+      <form className="add-event-form" onSubmit={handleAddEvent}>
         <input
           type="text"
-          placeholder="Enter event title..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          name="title"
+          value={newEvent.title}
+          onChange={onNewChange}
+          placeholder="Event title"
           required
         />
         <input
           type="datetime-local"
-          value={start}
-          onChange={(e) => setStart(e.target.value)}
+          name="start_time"
+          value={newEvent.start_time}
+          onChange={onNewChange}
           required
         />
         <input
           type="datetime-local"
-          value={end}
-          onChange={(e) => setEnd(e.target.value)}
+          name="end_time"
+          value={newEvent.end_time}
+          onChange={onNewChange}
           required
         />
-        <button type="submit" className="add-btn">Add</button>
+        <select
+          name="status"
+          value={newEvent.status}
+          onChange={onNewChange}
+          className="status-select"
+        >
+          <option value="BUSY">Busy</option>
+          <option value="SWAPPABLE">Swappable</option>
+          <option value="SWAP_PENDING">Swap Pending</option>
+        </select>
+        <button type="submit" className="btn btn-add">
+          Add Event
+        </button>
       </form>
 
-      <div className="event-list">
-        {events.map((ev) => (
-          <div key={ev.id} className="event-card">
-            <div>
-              <h3 className="event-title">{ev.title}</h3>
-              <p className="event-info">📅 ID: {ev.id}</p>
-              <p className={`event-status ${ev.status.toLowerCase()}`}>
-                Status: {ev.status}
+      {/* No events message */}
+      {events.length === 0 && (
+        <p className="calendar-empty">No events found. Add one above!</p>
+      )}
+
+      {/* Event Cards */}
+      <div className="calendar-grid">
+        {events.map((event) => (
+          <div className="calendar-card" key={event.id}>
+            <div className="calendar-card-header">
+              <h3 className="calendar-card-title">{event.title}</h3>
+              <div className="calendar-actions">
+                <button
+                  className="btn btn-edit"
+                  onClick={() => startEdit(event)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn btn-delete"
+                  onClick={() => handleDelete(event.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div className="calendar-time">
+              <p>
+                🕒 {new Date(event.start_time).toLocaleString()} →{" "}
+                {new Date(event.end_time).toLocaleString()}
               </p>
             </div>
-            <button
-              onClick={() => handleToggle(ev.id, ev.status)}
-              className={`swap-btn ${
-                ev.status === "SWAPPABLE" ? "busy" : "swappable"
-              }`}
+
+            <div
+              className={`status-badge status-${event.status.toLowerCase()}`}
             >
-              {ev.status === "SWAPPABLE" ? "Mark Busy" : "Make Swappable"}
-            </button>
+              {event.status}
+            </div>
           </div>
         ))}
       </div>
+
+      {/* ✏️ Edit Modal */}
+      {editingId && (
+        <div className="calendar-edit-modal">
+          <form className="calendar-edit-form" onSubmit={submitEdit}>
+            <h3>Edit Event</h3>
+
+            <label>
+              Title
+              <input
+                type="text"
+                name="title"
+                value={editForm.title}
+                onChange={onEditChange}
+                required
+              />
+            </label>
+
+            <label>
+              Start Time
+              <input
+                type="datetime-local"
+                name="start_time"
+                value={editForm.start_time}
+                onChange={onEditChange}
+                required
+              />
+            </label>
+
+            <label>
+              End Time
+              <input
+                type="datetime-local"
+                name="end_time"
+                value={editForm.end_time}
+                onChange={onEditChange}
+                required
+              />
+            </label>
+
+            <label>
+              Status
+              <select
+                name="status"
+                value={editForm.status}
+                onChange={onEditChange}
+                className="status-select"
+              >
+                <option value="BUSY">Busy</option>
+                <option value="SWAPPABLE">Swappable</option>
+                <option value="SWAP_PENDING">Swap Pending</option>
+              </select>
+            </label>
+
+            <div className="edit-buttons">
+              <button type="submit" className="btn btn-save">
+                Save
+              </button>
+              <button
+                type="button"
+                className="btn btn-cancel"
+                onClick={cancelEdit}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

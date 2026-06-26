@@ -1,4 +1,4 @@
-// src/api.js
+// ✅ src/api.js
 
 const LOCAL_BACKEND = "http://127.0.0.1:8000/api";
 
@@ -9,6 +9,9 @@ const API_BASE =
     ? LOCAL_BACKEND
     : `${window.location.origin.replace(":3000", ":8000")}/api`);
 
+// ---------------------------------------------------------------------
+// Generic Fetch Wrapper
+// ---------------------------------------------------------------------
 export async function fetchJson(path, options = {}) {
   const url = `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
 
@@ -29,7 +32,9 @@ export async function fetchJson(path, options = {}) {
   return await response.json();
 }
 
+// ---------------------------------------------------------------------
 // AUTH
+// ---------------------------------------------------------------------
 export async function signup(data) {
   return await fetchJson("/signup", {
     method: "POST",
@@ -50,7 +55,9 @@ export async function getMe(token) {
   });
 }
 
-// EVENTS
+// ---------------------------------------------------------------------
+// EVENTS (CALENDAR SECTION)
+// ---------------------------------------------------------------------
 export async function listMyEvents(token) {
   return await fetchJson("/events", {
     headers: { Authorization: `Bearer ${token}` },
@@ -73,14 +80,66 @@ export async function toggleSwappable(eventId, status, token) {
   });
 }
 
-// MARKETPLACE
+// 🟢 NEW: Update Event (Edit button in Calendar)
+export async function updateEvent(eventId, data, token) {
+  return await fetchJson(`/events/${eventId}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+// 🗑️ NEW: Delete Event (Delete button in Calendar)
+export async function deleteEvent(eventId, token) {
+  return await fetchJson(`/events/${eventId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+// ---------------------------------------------------------------------
+// MARKETPLACE SECTION
+// ---------------------------------------------------------------------
+export async function getMarketplaceItems(token) {
+  return await fetchJson("/marketplace", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function createMarketplaceItem(data, token) {
+  return await fetchJson("/marketplace", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+// 🟢 NEW: Update Marketplace item (Edit button)
+export async function updateMarketplaceItem(itemId, data, token) {
+  return await fetchJson(`/marketplace/${itemId}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+// 🗑️ NEW: Delete Marketplace item (Delete button)
+export async function deleteMarketplaceItem(itemId, token) {
+  return await fetchJson(`/marketplace/${itemId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+// ---------------------------------------------------------------------
+// SWAP REQUESTS
+// ---------------------------------------------------------------------
 export async function getSwappableSlots(token) {
   return await fetchJson("/swappable-slots", {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
-// SWAP REQUESTS
 export async function createSwapRequest(data, token) {
   return await fetchJson("/requests", {
     method: "POST",

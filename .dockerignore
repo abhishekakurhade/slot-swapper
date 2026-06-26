@@ -1,34 +1,32 @@
-# Include any files or directories that you don't want to be copied to your
-# container here (e.g., local build artifacts, temporary files, etc.).
-#
-# For more help, visit the .dockerignore file reference guide at
-# https://docs.docker.com/go/build-context-dockerignore/
+# ── Python / Backend ──────────────────────────────────────────────────────────
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.Python
+backend/slot_swapper.db    # DB lives in the named volume at runtime
 
-**/.classpath
-**/.dockerignore
-**/.env
-**/.git
-**/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
-**/.vs
-**/.vscode
-**/.next
-**/.cache
-**/*.*proj.user
-**/*.dbmdl
-**/*.jfm
-**/charts
-**/docker-compose*
-**/compose.y*ml
-**/Dockerfile*
+# ── Node / Frontend ───────────────────────────────────────────────────────────
+node_modules/
 **/node_modules
-**/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
-**/build
-**/dist
+npm-debug.log*
+build/
+dist/
+
+# ── Git & IDE ─────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+.dockerignore
+**/.env
+**/.vscode
+**/.idea
+**/.DS_Store
+
+# ── Docker files (no need to copy into image) ─────────────────────────────────
+Dockerfile*
+compose.y*ml
+nginx.conf
+
+# ── Docs ──────────────────────────────────────────────────────────────────────
+README*.md
 LICENSE
-README.md
